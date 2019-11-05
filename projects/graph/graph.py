@@ -154,11 +154,11 @@ class Graph:
             if node not in visited:
                 for neighbor in self.vertices[node]:
                     new_path = [node]
-                    new_path.append(neighbour)
+                    new_path.append(neighbor)
                     s.push(new_path)
 
                     # return path if neighbour is goal
-                    if neighbour == goal:
+                    if neighbor == destination_vertex:
                         return new_path
 
                 # mark node as explored
