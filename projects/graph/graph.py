@@ -19,7 +19,10 @@ class Graph:
         """
         if v1 in self.vertices and v2 in self.vertices:
             self.vertices[v1].add(v2)
-        
+
+    def get_neighbors(self, vertex_id):
+        return self.vertices[vertex_id]
+
     def bft(self, starting_vertex):
         """
         Print each vertex in breadth-first order
@@ -113,22 +116,23 @@ class Graph:
         
         # Create a Set to store visited vertices
         visited = set()
-        test_lst = []
         
         # While the queue is not empty...
         while destination_vertex not in visited:
             # Dequeue the first vertex
-            vert = q.dequeue()
+            path = q.dequeue()
             # If that vertex has not been visited
-            if vert not in visited:
-                visited.add(vert)
-                test_lst.append(vert)
-                print(vert)
-                # Then add all of its neighbors to the back of the queue
-                for neighbor in self.vertices[vert]:
-                    q.enqueue(neighbor)
-                    
-        return test_lst
+            v = path[-1]
+            if v not in visited:
+                if v == destination_vertex:
+                    return path
+                visited.add(v)
+            for neighbor in self.get_neighbors(v):
+                path_copy = list(path)
+                path_copy.append(neighbor)
+                q.enqueue(path_copy)
+
+        return None
         
     def dfs(self, starting_vertex, destination_vertex):
         """
@@ -143,28 +147,27 @@ class Graph:
         
         # Store visited vertices
         visited = set()
-        visited_lst = []
         
         while destination_vertex not in visited:
             # Dequeue the first vertex
-            vert = s.pop()
-            print(type(vert))
-            node = vert[-1]
+            path = s.pop()
+            v = vert[-1]
             # If that vertex has not been visited
-            if node not in visited:
-                for neighbor in self.vertices[node]:
-                    new_path = [node]
-                    new_path.append(neighbor)
-                    s.push(new_path)
+            while destination_vertex not in visited:
+                # Dequeue the first vertex
+                path = s.pop()
+                # If that vertex has not been visited
+                v = path[-1]
+                if v not in visited:
+                    if v == destination_vertex:
+                        return path
+                    visited.add(v)
+                for neighbor in self.get_neighbors(v):
+                    path_copy = list(path)
+                    path_copy.append(neighbor)
+                    s.push(path_copy)
 
-                    # return path if neighbour is goal
-                    if neighbor == destination_vertex:
-                        return new_path
-
-                # mark node as explored
-                visited_lst.append(node)
-
-            return visited_lst
+            return None
 
 
 
