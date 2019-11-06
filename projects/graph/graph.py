@@ -151,7 +151,7 @@ class Graph:
         while destination_vertex not in visited:
             # Dequeue the first vertex
             path = s.pop()
-            v = vert[-1]
+            v = path[-1]
             # If that vertex has not been visited
             while destination_vertex not in visited:
                 # Dequeue the first vertex
