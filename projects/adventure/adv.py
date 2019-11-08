@@ -22,7 +22,137 @@ world.printRooms()
 player = Player("Name", world.startingRoom)
 
 # Fill this out
-traversalPath = []
+class Queue():
+    def __init__(self):
+        self.queue = []
+    def enqueue(self, value):
+        self.queue.append(value)
+    def dequeue(self):
+        if self.size() > 0:
+            return self.queue.pop(0)
+        else:
+            return None
+    def size(self):
+        return len(self.queue)
+
+class Stack():
+    def __init__(self):
+        self.stack = []
+    def push(self, value):
+        self.stack.append(value)
+    def pop(self):
+        if self.size() > 0:
+            return self.stack.pop()
+        else:
+            return None
+    def size(self):
+        return len(self.stack)
+
+    
+class Graph:
+    """Represent a graph as a dictionary of vertices mapping labels to edges."""
+    def __init__(self):
+        self.vertices = {}
+    def add_vertex(self, vertex):
+        """
+        Add a vertex to the graph.
+        """
+        self.vertices[vertex] = {}
+
+    def add_direcs(self, vertex, exits):
+        """
+        Add a directed edge to the graph.
+        """
+        for i in exits:
+            self.vertices[vertex].update({i:'?'})
+
+    def get_neighbors(self, vertex_id):
+        return self.vertices[vertex_id]
+
+
+opp_d = {'n':'s',
+         's':'n',
+         'e':'w',
+         'w':'e'}
+
+def findUnexploredRoom(player, graph):
+    for direc in player.currentRoom.getExits():
+        if graph.vertices[player.currentRoom.id][direc] == '?':
+            return direc
+    else:
+        return direc
+
+def room_traverse(player, world):
+    
+    # Create an empty queue and queue the players starting room
+    s = Stack()
+    s.push(player.currentRoom.id)
+    
+    graph = Graph()
+    roomSet = set()
+    traversalPath = []
+    
+    # Add inital room to graph
+    graph.add_vertex(player.currentRoom.id)
+    # Add initial room connections
+    graph.add_direcs(player.currentRoom.id, player.currentRoom.getExits())
+    # Add initial room to room set
+    roomSet.add(player.currentRoom.id)
+    
+    # While there are rooms in the queue --> Continue
+    while s.size() > 0:
+        
+        direc = findUnexploredRoom(player, graph)
+
+        print("Direction: ", direc)
+        
+        if graph.vertices[player.currentRoom.id][direc] == '?':
+
+            # Pointer to current room
+            prev_room = player.currentRoom.id
+
+            # Add direction to traversal path
+            traversalPath.append(direc)
+
+            # Travel to new room
+            player.travel(direc)
+
+            print("Current player room: ",player.currentRoom.id)
+
+            # Add new room to queue
+            s.push(player.currentRoom.id)
+
+            # Add new room to graph
+            if player.currentRoom.id not in roomSet:
+                graph.add_vertex(player.currentRoom.id)
+                graph.add_direcs(player.currentRoom.id, player.currentRoom.getExits())
+                roomSet.add(player.currentRoom.id)
+
+            # Fill in previous room direction
+            graph.vertices[prev_room][direc] = player.currentRoom.id
+
+            opp_direc = opp_d[direc]
+            graph.vertices[player.currentRoom.id][opp_direc] = prev_room
+
+        else:
+            print("STACK1: ", s.stack)
+            s.pop()
+            
+            if s.size() > 0:
+                prev_room = player.currentRoom
+                player.currentRoom = world.rooms[s.stack[-1]]
+
+                for key, value in graph.vertices[prev_room.id].items():
+                    if value == player.currentRoom.id:
+                        traversalPath.append(key)
+
+            print("STACk2: ", s.stack)
+
+    print(roomSet)
+    print(traversalPath)       
+    return traversalPath
+
+traversalPath = room_traverse(player,world)
 
 
 
