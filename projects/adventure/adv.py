@@ -148,8 +148,8 @@ def room_traverse(player, world):
 
             print("STACk2: ", s.stack)
 
-    print(roomSet)
-    print(traversalPath)       
+    #print(roomSet)
+    #print(traversalPath)       
     return traversalPath
 
 traversalPath = room_traverse(player,world)
